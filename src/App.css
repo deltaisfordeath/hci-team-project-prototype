@@ -1,0 +1,247 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+button {
+  display: inline-block;
+  padding: 8px 30px;
+
+  color: black;
+
+  width: fit-content;
+  min-width: 10em;
+
+  font-weight: bold;
+  font-size: 20px;
+  text-decoration: none;
+
+  background: linear-gradient(to bottom, #98d477, #78b55a);
+  border: 2px solid #5a9441;
+  box-shadow:
+    inset -3px -3px 5px rgba(0, 0, 0, 0.3),
+    inset 3px 3px 5px rgba(255, 255, 255, 0.5);
+
+  cursor: pointer;
+  transition: all 0.1s ease-in-out;
+}
+
+button:hover {
+  background: linear-gradient(to bottom, #a8e487, #88c56a);
+}
+
+button:active {
+  background: linear-gradient(to bottom, #78b55a, #98d477);
+  box-shadow: inset 0px 2px 3px rgba(0, 0, 0, 0.5);
+  transform: translateY(1px);
+}
+
+button:disabled {
+  background: gray;
+  color: white;
+  pointer-events: none;
+}
+
+.add-ons-container {
+  padding-top: 1em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2em;
+}
+
+.add-on-container {
+  font-size: 1.5em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5em;
+  border: 2px solid black;
+  width: 80%;
+}
+
+.add-on-icon {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  margin-right: 1em;
+  height: 1.7em;
+  width: 1.5em;
+}
+
+.add-on-name {
+  font-style: bold;
+}
+
+.add-on-select label {
+  display: flex;
+  align-items: center;
+  font-size: 1.3rem;
+}
+
+.add-on-select input {
+  margin-left: 0.8em;
+}
+
+input[type="checkbox"] {
+  width: 2em;
+  height: 2em;
+}
+
+.add-on-description {
+  color: gray;
+  font-size: 1.1rem;
+}
+
+.btn-small {
+  font-size: 1em;
+  padding: 5px;
+  width: 50%;
+  min-width: unset;
+  box-sizing: border-box;
+}
+
+.checkout-summary {
+  text-align: left;
+  padding: 0 1.5em;
+}
+
+.checkout-container {
+  padding: 1em;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  align-items: center;
+  margin-bottom: 3rem;
+}
+
+.button-group-horizontal {
+  flex-direction: row;
+  justify-content: space-between;
+  width: 6in;
+  max-width: 100%;
+}
+
+.phone-button-group {
+  margin: 2em 0;
+}
+
+.container {
+  border-radius: 0.25in;
+  height: 100%;
+  max-height: 100%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.demo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.75em;
+  padding-top: 0.8em;
+}
+
+.demo-video-container {
+  width: 80%;
+  height: 3.25in;
+  border: 2px solid black;
+}
+
+.help-text {
+  position: absolute;
+  bottom: 0;
+}
+
+.periods {
+  width: 1.1em;
+  height: 1.1em;
+  border: 1px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+
+.change-periods {
+  background-color: lightgray;
+  cursor: pointer;
+}
+
+.phone-list-container {
+  width: 90%;
+  overflow-x: scroll;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1em;
+  padding-bottom: 0.25em;
+}
+
+.phone-container {
+  width: 2.05in;
+  padding: 0.5em;
+  display: flex;
+  gap: 1em;
+  flex-direction: column;
+  align-items: baseline;
+  border: 2px solid black;
+}
+
+.phone-container h3 {
+  margin: 0 auto;
+}
+
+input[type="radio"] {
+  margin-right: 1em;
+}
+
+.phone-rate-row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.proto-container {
+  width: 8in;
+  height: 5.5in;
+  border: 1px solid black;
+}
+
+.rental-options-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5em;
+  padding-top: 1em;
+  position:relative;
+}
+
+.welcome-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  background-image: url('./welcome.jpg');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
