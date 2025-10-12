@@ -199,7 +199,7 @@ function App() {
           <div>Rental Period: {duration}</div>
           <div>Rate: ${phone['rates'][duration]} / Period</div>
           <div style={{display: 'flex'}}>Periods:&nbsp;&nbsp;
-            <div className="periods change-periods" onClick={() => setNumPeriods(n => n-1)}>-</div>
+            <div className="periods change-periods" onClick={() => setNumPeriods(n => Math.max(n-1, 1))}>-</div>
             <div className="periods number-periods">{numPeriods}</div>
             <div className="periods change-periods" onClick={() => setNumPeriods(n => n+1)}>+</div>
           </div>
