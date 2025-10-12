@@ -5,10 +5,16 @@ import './App.css'
 function App() {
   const [page, setPage] = useState('welcome');
   const [phone, setPhone] = useState(phones[0]);
-  const [duration, setDuration] = useState(null);
+  const [duration, setDuration] = useState('Daily');
   const [numPeriods, setNumPeriods] = useState(1);
   const [addOns, setAddons] = useState(mockAddons);
   const [modalContent, setModalContent] = useState(null);
+  const [prevPage, setPrevPage] = useState(null);
+
+  function navigate(newPage) {
+    setPrevPage(page);
+    setPage(newPage);
+  }
 
   function HelpText() {
     return <div className='help-text'>{"Need help? Call 1-800-123-4567 (24/7 Support)"}</div>
@@ -21,9 +27,9 @@ function App() {
         <h2>Phones for Every Destination!</h2>
       </div>
       <div className='button-group'>
-        <button onClick={() => setPage('demo')}>Start Rental!</button>
-        <button onClick={() => setPage('return')}>Rental Return</button>
-        <button onClick={() => setPage('tutorial')}>Watch How it Works</button>
+        <button onClick={() => navigate('demo')}>Start Rental!</button>
+        <button onClick={() => navigate('return')}>Rental Return</button>
+        <button onClick={() => navigate('tutorial')}>Watch How it Works</button>
       </div>
     </div>)
   }
@@ -33,8 +39,8 @@ function App() {
       <h2>{`Rent the ${phone.name} for your trip!`}</h2>
       <div className="demo-video-container"></div>
       <div className="button-group button-group-horizontal">
-        <button onClick={() => setPage('rental-options')}>See Other Options</button>
-        <button onClick={() => setPage('add-ons')}>Rent This Phone</button>
+        <button onClick={() => navigate('rental-options')}>See Other Options</button>
+        <button onClick={() => navigate('checkout')}>Rent This Phone</button>
       </div>
       <HelpText />
     </div>)
@@ -99,17 +105,17 @@ function App() {
                   className="btn-small"
                   onClick={() => {
                     setPhone(p);
-                    setPage("demo");
+                    navigate("demo");
                   }}
                 >
                   Demo
                 </button>
                 <button
-                  disabled={duration == null || phone.name !== p.name}
+                  disabled={phone.name !== p.name}
                   className="btn-small"
                   onClick={() => {
                     setPhone(p);
-                    setPage("add-ons");
+                    navigate("add-ons");
                   }}
                 >
                   Add-Ons
@@ -119,8 +125,8 @@ function App() {
           ))}
         </div>
         <div className="button-group button-group-horizontal">
-          <button onClick={() => setPage("demo")}>Back</button>
-          <button disabled={duration == null} onClick={() => setPage("checkout")}>
+          <button onClick={() => navigate("demo")}>Back</button>
+          <button onClick={() => navigate("checkout")}>
             Checkout
           </button>
         </div>
@@ -163,8 +169,8 @@ function App() {
         </div>
       </div>)}
       <div className="button-group button-group-horizontal">
-          <button onClick={() => setPage("rental-options")}>Back</button>
-          <button disabled={duration == null} onClick={() => setPage("checkout")}>
+          <button onClick={() => navigate("rental-options")}>Back</button>
+          <button onClick={() => navigate("checkout")}>
             Checkout
           </button>
         </div>
@@ -250,6 +256,11 @@ function App() {
               </span>
           </div>
         </div>
+      </div>
+      <div className='button-group button-group-horizontal'>
+        <button onClick={() => navigate(prevPage)}>Back</button>
+        <button onClick={() => navigate('tutorial')}>How It Works</button>
+        <button onClick={() => navigate('confirmation')}>Confirm Rental</button>
       </div>
     </div>
   }
