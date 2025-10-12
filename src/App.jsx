@@ -125,7 +125,7 @@ function App() {
           ))}
         </div>
         <div className="button-group button-group-horizontal">
-          <button onClick={() => navigate("demo")}>Back</button>
+          <button onClick={() => navigate(prevPage)}>Back</button>
           <button onClick={() => navigate("checkout")}>
             Checkout
           </button>
@@ -169,12 +169,59 @@ function App() {
         </div>
       </div>)}
       <div className="button-group button-group-horizontal">
-          <button onClick={() => navigate("rental-options")}>Back</button>
-          <button onClick={() => navigate("checkout")}>
-            Checkout
-          </button>
+        <button onClick={() => navigate(prevPage)}>Back</button>
+        <button onClick={() => navigate("checkout")}>
+          Checkout
+        </button>
+      </div>
+      <HelpText />
+    </div>
+  }
+
+  function Tutorial() {
+    const [currentSegment, setCurrentSegment] = useState(0);
+    const segmentText = [
+      "Choosing a Phone",
+      "Payment Methods",
+      "Collecting Items",
+      "Returning Items"
+    ]
+    return <div className='container flex-container tutorial-container'>
+      <h2>How It Works!</h2>
+        <div onClick={() => setCurrentSegment(s => s-1)} className={`left-arrow ${currentSegment === 0 ? 'hidden' : ''}`} ></div>
+
+      <div className="progress-bar">
+        <div>
+          Choose Phone
+          <div onClick={() => setCurrentSegment(0)} className={`progress-segment ${currentSegment === 0 ? 'current-segment' : ''}`}></div>
         </div>
-        <HelpText />
+        <div>
+          Pay
+          <div onClick={() => setCurrentSegment(1)} className={`progress-segment ${currentSegment === 1 ? 'current-segment' : ''}`}></div>
+        </div>
+        <div>
+          Pick Up
+          <div onClick={() => setCurrentSegment(2)} className={`progress-segment ${currentSegment === 2 ? 'current-segment' : ''}`}></div>
+        </div>
+        <div>
+          Return
+          <div onClick={() => setCurrentSegment(3)} className={`progress-segment ${currentSegment === 3 ? 'current-segment' : ''}`}></div>
+        </div>
+      </div>
+        <div onClick={() => setCurrentSegment(s => s+1)} className={`right-arrow ${currentSegment === 3 ? 'hidden' : ''}`} ></div>
+
+      <div className="tutorial-video-container">
+        <div className="tutorial-video">
+          {segmentText[currentSegment]}
+        </div>
+      </div>
+      <div className="button-group button-group-horizontal">
+        <button onClick={() => navigate(prevPage)}>Back</button>
+        <button onClick={() => navigate("checkout")}>
+          Checkout
+        </button>
+      </div>
+      <HelpText />
     </div>
   }
 
@@ -283,6 +330,7 @@ function App() {
       {page === 'rental-options' && <RentalOptions />}
       {page === 'add-ons' && <AddOns />}
       {page === 'checkout' && <Checkout />}
+      {page === 'tutorial' && <Tutorial />}
     </div>
   )
 }
