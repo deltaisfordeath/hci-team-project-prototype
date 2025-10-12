@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useLayoutEffect } from 'react'
-import { phones, addOns as mockAddons, lateReturnPolicy, insertPaymentMethod } from './mockData';
+import { phones, addOns as mockAddons, lateReturnPolicy, insertPaymentMethod, rentalPeriods } from './mockData';
 import './App.css'
 
 function App() {
@@ -196,7 +196,14 @@ function App() {
       <div className="checkout-layout">
         <div className="checkout-summary">
           <div>Model: {phone.name}</div>
-          <div>Rental Period: {duration}</div>
+          <div>Rental Period:&nbsp;
+            <select onChange={e => setDuration(e.target.value)}>
+              {rentalPeriods.map(per => {
+                const price = phone['rates'][per];
+                return <option selected={per === duration} value={per}>{per}: ${price}</option>
+              })}
+            </select>
+          </div>
           <div>Rate: ${phone['rates'][duration]} / Period</div>
           <div style={{display: 'flex'}}>Periods:&nbsp;&nbsp;
             <div className="periods change-periods" onClick={() => setNumPeriods(n => Math.max(n-1, 1))}>-</div>

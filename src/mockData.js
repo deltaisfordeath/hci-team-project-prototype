@@ -1,3 +1,9 @@
+export const rentalPeriods = [
+  "Daily",
+  "Weekly",
+  "Monthly"
+]
+
 export const phones = [
     {
       name: "iPhone 17",
