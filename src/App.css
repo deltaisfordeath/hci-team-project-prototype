@@ -3,6 +3,7 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  caret-color: transparent;
 }
 
 button {
@@ -152,6 +153,22 @@ input[type="checkbox"] {
   position: relative;
 }
 
+.checkout-layout {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.checkout-payment {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  text-align: left;
+}
+
+.checkout-payment h4 {
+  margin: 0.5em 0;
+}
+
 .demo-container {
   display: flex;
   flex-direction: column;
@@ -183,6 +200,88 @@ input[type="checkbox"] {
 
 .change-periods {
   background-color: lightgray;
+  cursor: pointer;
+}
+
+.close-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1.5px solid black;
+  width: 1.5em;
+  height: 1.5em;
+  margin-left: auto;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.close-button::after {
+  content: "X";
+}
+
+.modal-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 100;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1em;
+  background-color: white;
+  position: absolute;
+  width: 60%;
+  height: 60%;
+  border-radius: 0.125in;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.modal-text {
+  margin-top: 2.5em;
+  max-width: 80%;
+}
+
+input[type="text"] {
+  caret-color: auto;
+  padding: 0.5em;
+  width: 20em;
+}
+
+.tos-container {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  width: 20em;
+}
+
+.tos-text span{
+  color: blue;
+  font-weight: bold;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.payment-method-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1em;
+  width: 75%;
+}
+
+.payment-method-grid .payment-button {
+  padding: 1em;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid black;
+  border-radius: 8px;
+  background-color: white;
   cursor: pointer;
 }
 

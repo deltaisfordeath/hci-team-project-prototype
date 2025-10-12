@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useLayoutEffect } from 'react'
-import { phones, addOns as mockAddons } from './mockData';
+import { phones, addOns as mockAddons, lateReturnPolicy, insertPaymentMethod } from './mockData';
 import './App.css'
 
 function App() {
@@ -8,6 +8,7 @@ function App() {
   const [duration, setDuration] = useState(null);
   const [numPeriods, setNumPeriods] = useState(1);
   const [addOns, setAddons] = useState(mockAddons);
+  const [modalContent, setModalContent] = useState(null);
 
   function HelpText() {
     return <div className='help-text'>{"Need help? Call 1-800-123-4567 (24/7 Support)"}</div>
@@ -222,13 +223,43 @@ function App() {
           <br />
           <div style={{fontWeight: 'bold', fontSize: '1.2em'}}><span style={{color: 'green'}}>Grand Total: </span>${totalPrice}</div>
         </div>
-        <div className="checkout-payment"></div>
+        <div className="checkout-payment">
+          <h4>Select Payment Method</h4>
+          <div className='payment-method-grid'>
+            <div onClick={() => setModalContent(insertPaymentMethod)} className="payment-button">Debit</div>
+            <div onClick={() => setModalContent(insertPaymentMethod)} className="payment-button">Credit</div>
+            <div onClick={() => setModalContent(insertPaymentMethod)} className="payment-button">GPay</div>
+            <div onClick={() => setModalContent(insertPaymentMethod)} className="payment-button"><img src="./apple.png" alt="" />Pay</div>
+          </div>
+          <label>
+            Email
+            <br />
+            <input type="text" />
+          </label>
+          <div className="tos-container">
+              <input type="checkbox" name="tos" id="tos" />
+              <span className="tos-text">
+                I agree to the terms of the <span className="tos-link" onClick={() => setModalContent(lateReturnPolicy)}>Late Return Policy</span>
+              </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  function Modal() {
+    return <div className="container modal-container">
+      <div className="modal-body">
+        <div className="close-button" onClick={() => setModalContent(null)}></div>
+        <h2 className="modal-title">{modalContent.title}</h2>
+        <div className="modal-text">{modalContent.body}</div>
       </div>
     </div>
   }
 
   return (
     <div className="container proto-container">
+      {modalContent && <Modal />}
       {page === 'welcome' && <Welcome />}
       {page === 'demo' && <Demo />}
       {page === 'rental-options' && <RentalOptions />}

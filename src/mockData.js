@@ -71,3 +71,13 @@ export const addOns = [
     selected: false
   },
 ]
+
+export const lateReturnPolicy = {
+  title: "Late Return Policy",
+  body: "Your original payment method will automatically be charged your selected rate plus a $50 late fee for each week the phone is not returned past the return date. Additional charges will be posted to your original payment method on the 1st of each month until the phone is returned."
+}
+
+export const insertPaymentMethod = {
+  title: "Payment",
+  body: "Insert payment card or place phone over contactless payment terminal."
+}
