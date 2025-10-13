@@ -229,6 +229,7 @@ function App() {
     const rentalPrice = phone['rates'][duration] * numPeriods;
     const addOnsPrice = addOns.reduce((acc, curr) => {return acc + (curr.selected ? curr.price : 0)}, 0);
     const totalPrice = rentalPrice + addOnsPrice;
+    const [agreedTos, setAgreedTos] = useState(false);
 
     function addDays(date, numDays) {
       const newDate = new Date(date);
@@ -297,7 +298,7 @@ function App() {
             <input type="text" />
           </label>
           <div className="tos-container">
-              <input type="checkbox" name="tos" id="tos" />
+              <input type="checkbox" name="tos" id="tos" checked={agreedTos} onChange={e => setAgreedTos(e.target.checked)}/>
               <span className="tos-text">
                 I agree to the terms of the <span className="tos-link" onClick={() => setModalContent(lateReturnPolicy)}>Late Return Policy</span>
               </span>
@@ -307,7 +308,7 @@ function App() {
       <div className='button-group button-group-horizontal'>
         <button onClick={() => navigate(prevPage)}>Back</button>
         <button onClick={() => navigate('tutorial')}>How It Works</button>
-        <button onClick={() => navigate('confirmation')}>Confirm Rental</button>
+        <button disabled={!agreedTos} onClick={() => navigate('confirmation')}>Continue</button>
       </div>
     </div>
   }
