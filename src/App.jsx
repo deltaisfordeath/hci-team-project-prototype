@@ -150,7 +150,7 @@ function App() {
       <h2>Choose Accessories and Service for Your Trip</h2>
       {addOns.map(addOn => <div className='add-on-container' key={addOn.name}>
         <div style={{display: 'flex', alignItems: 'center'}}>
-          <div className='add-on-icon' style={{backgroundImage: `url(${addOn.img})`}}></div>
+          <div className='add-on-icon' style={{backgroundImage: `url(./img/${addOn.img})`}}></div>
           <div className="add-on-name">{addOn.name}</div>
         </div>
 
@@ -290,7 +290,7 @@ function App() {
             <div onClick={() => setModalContent(insertPaymentMethod)} className="payment-button">Debit</div>
             <div onClick={() => setModalContent(insertPaymentMethod)} className="payment-button">Credit</div>
             <div onClick={() => setModalContent(insertPaymentMethod)} className="payment-button">GPay</div>
-            <div onClick={() => setModalContent(insertPaymentMethod)} className="payment-button"><img src="./apple.png" alt="" />Pay</div>
+            <div onClick={() => setModalContent(insertPaymentMethod)} className="payment-button"><img src="./img/apple.png" alt="" />Pay</div>
           </div>
           <label>
             Email

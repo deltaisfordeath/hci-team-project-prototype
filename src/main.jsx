@@ -5,6 +5,8 @@ import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <a style={{position: 'absolute', top: '3em', left: '3em'}} href='./index.html#toc'>Table of Contents</a>
+      <App />
+    <a style={{position: 'absolute', bottom: '3em', left: '3em'}} href='./index.html#toc'>Table of Contents</a>
   </StrictMode>,
 )

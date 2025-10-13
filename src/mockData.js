@@ -50,28 +50,28 @@ export const phones = [
 export const addOns = [
   {
     name: "Phone Case",
-    img: "./case-icon.png",
+    img: "case-icon.png",
     desc: "Protect Your Phone While You Travel",
     price: 12,
     selected: false
   },
   {
     name: "SIM Card",
-    img: "./sim-icon.png",
+    img: "sim-icon.png",
     desc: "Stay Connected Abroad",
     price: 8,
     selected: false
   },
   {
     name: "Charger & Power Bank",
-    img: "./charger-icon.png",
+    img: "charger-icon.png",
     desc: "Keep Powered On The Go",
     price: 30,
     selected: false
   },
   {
     name: "Insurance",
-    img: "./insurance-icon.png",
+    img: "insurance-icon.png",
     desc: "Peace Of Mind For Your Rental",
     price: 60,
     selected: false
