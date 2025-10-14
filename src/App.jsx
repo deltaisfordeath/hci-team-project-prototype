@@ -50,6 +50,14 @@ function App() {
   function RentalOptions() {
     const containerRef = useRef();
 
+    function clearAddons() {
+      setAddons(current => {
+        return current.map(c => {
+          return {...c, selected: false}
+        })
+      })
+    }
+
     useEffect(() => {
       const scrollContainer = containerRef.current;
       if (scrollContainer) {
@@ -88,6 +96,7 @@ function App() {
                         value={`${p.name}-${rateName}`}
                         checked={phone.name === p.name && duration === rateName}
                         onChange={() => {
+                          clearAddons();
                           setDuration(rateName);
                           setPhone(p);
                         }}
@@ -445,7 +454,7 @@ function App() {
     })
   }, [])
     return (<div className='container flex-container'>
-      <h2>Please Place Your Phone and Accessories Into The Drop Box</h2>
+      <h2 style={{maxWidth: '75%'}}>Please Place Your Phone and Accessories Into The Drop Box</h2>
       <div className='flex-container'>
         <div style={{backgroundImage: 'none'}} className="demo-video-container">
           <div className="tutorial-video">
