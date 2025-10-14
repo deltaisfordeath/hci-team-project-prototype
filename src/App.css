@@ -96,6 +96,15 @@ input[type="checkbox"] {
   font-size: 1.1rem;
 }
 
+.airplane-image {
+  width: 7em;
+  height: 6em;
+  background-image: url('./img/airplane.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 .btn-small {
   font-size: 1em;
   padding: 5px;

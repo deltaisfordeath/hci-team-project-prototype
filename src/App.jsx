@@ -57,7 +57,6 @@ function App() {
         };
         scrollContainer.addEventListener('scroll', handleScroll);
         return () => {
-          localStorage.clear()
           scrollContainer.removeEventListener('scroll', handleScroll);
         };
       }
@@ -74,12 +73,10 @@ function App() {
       <div className="container rental-options-container">
         <h2>Choose A Phone</h2>
         <div ref={containerRef} className="phone-list-container">
-          {/* Add the key prop here */}
           {phones.map((p) => (
             <div key={p.name} className="phone-container">
               <h3>{p.name}</h3>
 
-              {/* And also add the key prop here */}
               {Object.keys(p.rates).map((rateName) => {
                 return (
                   <div key={rateName} className="phone-rate-row">
@@ -87,14 +84,14 @@ function App() {
                       <input
                         type="radio"
                         name="rental-duration"
-                        value={`${p.name}-${rateName}`} // Also fixed a bug here!
+                        value={`${p.name}-${rateName}`}
                         checked={phone.name === p.name && duration === rateName}
                         onChange={() => {
                           setDuration(rateName);
                           setPhone(p);
                         }}
                       />
-                      {rateName.charAt(0).toUpperCase() + rateName.slice(1)}
+                      {rateName}
                     </label>
                     ${p["rates"][rateName]}
                   </div>
@@ -125,7 +122,7 @@ function App() {
           ))}
         </div>
         <div className="button-group button-group-horizontal">
-          <button onClick={() => navigate(prevPage)}>Back</button>
+          <button onClick={() => navigate('demo')}>Back</button>
           <button onClick={() => navigate("checkout")}>
             Checkout
           </button>
@@ -147,7 +144,7 @@ function App() {
   function AddOns() {
 
     return <div className='container add-ons-container'>
-      <h2>Choose Accessories and Service for Your Trip</h2>
+      <h2>Choose Accessories and Service for Your {phone.name}</h2>
       {addOns.map(addOn => <div className='add-on-container' key={addOn.name}>
         <div style={{display: 'flex', alignItems: 'center'}}>
           <div className='add-on-icon' style={{backgroundImage: `url(./img/${addOn.img})`}}></div>
@@ -169,7 +166,7 @@ function App() {
         </div>
       </div>)}
       <div className="button-group button-group-horizontal">
-        <button onClick={() => navigate(prevPage)}>Back</button>
+        <button onClick={() => navigate('rental-options')}>Pick Another Phone</button>
         <button onClick={() => navigate("checkout")}>
           Checkout
         </button>
@@ -251,10 +248,10 @@ function App() {
         <div className="checkout-summary">
           <div>Model: {phone.name}</div>
           <div>Rental Period:&nbsp;
-            <select onChange={e => setDuration(e.target.value)}>
+            <select value={duration} onChange={e => setDuration(e.target.value)}>
               {rentalPeriods.map(per => {
                 const price = phone['rates'][per];
-                return <option selected={per === duration} value={per}>{per}: ${price}</option>
+                return <option key={`${phone.name}-${per}`} value={per}>{per}: ${price}</option>
               })}
             </select>
           </div>
@@ -269,15 +266,17 @@ function App() {
           <br />
           <div>Add-Ons:</div>
           {addOns.map(a => <div key={a.name}>
-            <input 
-              style={{ width: 'unset', height: 'unset'}} 
-              type="checkbox" 
-              name={a.name} 
-              id={a.name}
-              checked={a.selected}
-              onChange={e => updateAddons(e, a.name)}
-            />
-            {a.name} ${a.price}
+            <label>
+              <input 
+                style={{ width: 'unset', height: 'unset'}} 
+                type="checkbox" 
+                name={a.name} 
+                id={a.name}
+                checked={a.selected}
+                onChange={e => updateAddons(e, a.name)}
+              />
+              {a.name} ${a.price}
+            </label>
             </div>
           )}
           <div style={{fontWeight: 'bold'}}>Add-Ons Subtotal: ${addOnsPrice}</div>
@@ -308,17 +307,106 @@ function App() {
       <div className='button-group button-group-horizontal'>
         <button onClick={() => navigate(prevPage)}>Back</button>
         <button onClick={() => navigate('tutorial')}>How It Works</button>
-        <button disabled={!agreedTos} onClick={() => navigate('confirmation')}>Continue</button>
+        <button disabled={!agreedTos} onClick={() => navigate('success')}>Continue</button>
       </div>
     </div>
   }
 
+  function Success() {
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        navigate('welcome');
+      }, 10000);
+
+      return (() => {
+        clearTimeout(timer);
+      })
+    }, [])
+    return <div className='container flex-container'>
+      <br />
+      <h2>Success!</h2>
+      <br />
+      <h2>Your phone and accessories are on the way!</h2>
+      <br />
+      <h2>Enjoy your trip!</h2>
+      <br />
+      <br />
+      <div className="airplane-image"></div>
+      <br />
+      <br />
+      <button onClick={() => navigate('welcome')}>Exit</button>
+    </div>
+  }
+
+  function Return() {
+    const returnCodeInput = {
+      title: "Input Return Code",
+      body: `<div>
+        <div>Please enter the return code on your rental phone.</div>
+        <br />
+        <div><label>Return Code: <input></input></label></div>
+        <br />
+        <button id="return-code-button">Submit</button>
+        </div>`
+    }
+
+    return (<div className='container demo-container'>
+      <h2>Scan Your QR Code to Begin</h2>
+      <div className="demo-video-container">
+        <div className="tutorial-video">
+            Place phone under scanner
+          </div>
+      </div>
+      <div className="button-group button-group-horizontal">
+        <button onClick={() => navigate('welcome')}>Back</button>
+        <button onClick={() => setModalContent(returnCodeInput)}>Enter Code</button>
+      </div>
+      <HelpText />
+    </div>)
+  }
+
+
+  function Complete() {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigate('welcome');
+    }, 10000);
+
+    return (() => {
+      clearTimeout(timer);
+    })
+  }, [])
+  return <div className='container flex-container'>
+      <br />
+      <h2>Return Complete!</h2>
+      <br />
+      <h2>Thank you for renting with us!</h2>
+      <br />
+      <h2>We hope you enjoyed your trip!</h2>
+      <br />
+      <br />
+      <div className="airplane-image"></div>
+      <br />
+      <br />
+      <button onClick={() => navigate('welcome')}>Exit</button>
+    </div>
+  }
+
   function Modal() {
+    useEffect(() => {
+      const button = document.querySelector('#return-code-button');
+      if (button) {
+        const listener = () => {setModalContent(null); navigate('complete')}
+        button.addEventListener('click', listener);
+        return () => button.removeEventListener('click', listener);
+      }
+    })
+
     return <div className="container modal-container">
       <div className="modal-body">
         <div className="close-button" onClick={() => setModalContent(null)}></div>
         <h2 className="modal-title">{modalContent.title}</h2>
-        <div className="modal-text">{modalContent.body}</div>
+        <div className="modal-text" dangerouslySetInnerHTML={{__html: modalContent.body}}></div>
       </div>
     </div>
   }
@@ -332,6 +420,10 @@ function App() {
       {page === 'add-ons' && <AddOns />}
       {page === 'checkout' && <Checkout />}
       {page === 'tutorial' && <Tutorial />}
+      {page === 'success' && <Success />}
+      {page === 'return' && <Return />}
+
+      {page === 'complete' && <Complete />}
     </div>
   )
 }
