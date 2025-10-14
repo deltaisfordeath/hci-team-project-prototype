@@ -12,6 +12,7 @@ function App() {
   const [prevPage, setPrevPage] = useState(null);
 
   function navigate(newPage) {
+    localStorage.clear();
     setPrevPage(page);
     setPage(newPage);
   }
@@ -309,6 +310,7 @@ function App() {
         <button onClick={() => navigate('tutorial')}>How It Works</button>
         <button disabled={!agreedTos} onClick={() => navigate('success')}>Continue</button>
       </div>
+      <HelpText />
     </div>
   }
 
@@ -350,12 +352,18 @@ function App() {
         </div>`
     }
 
-    return (<div className='container demo-container'>
+    return (<div className='container flex-container'>
       <h2>Scan Your QR Code to Begin</h2>
-      <div className="demo-video-container">
-        <div className="tutorial-video">
+      <br />
+      <div className='flex-container'>
+        <div style={{backgroundImage: 'none'}} className="demo-video-container">
+          <div className="tutorial-video">
             Place phone under scanner
           </div>
+        </div>
+        <div style={{maxWidth: '70%', marginBottom: '0.5em'}} >
+          <h3 style={{color: 'red'}}>Error reading QR code. Hold the phone steady and closer to the scanner, or input return code manually.</h3>
+        </div>
       </div>
       <div className="button-group button-group-horizontal">
         <button onClick={() => navigate('welcome')}>Back</button>
@@ -365,6 +373,93 @@ function App() {
     </div>)
   }
 
+  function ReturnSummary() {
+    const rentalPrice = phone['rates']['Weekly'] * 3;
+    const addOnsPrice = addOns.slice(0,2).reduce((acc, curr) => {return acc + curr.price}, 0);
+    const totalPrice = rentalPrice + addOnsPrice;
+
+    function addDays(date, numDays) {
+      const newDate = new Date(date);
+      newDate.setDate(newDate.getDate() + numDays);
+      return newDate;
+    }
+
+    const today = new Date();
+    const dueDate = addDays(today, -3) 
+    const rentalDate = addDays(dueDate, -21);
+    const diffInMilliseconds = today.getTime() - dueDate.getTime();
+    const daysLate = Math.max(0, Math.round(diffInMilliseconds / 1000 * 60 * 60 * 24));
+    return <div style={{position: 'relative'}} className="container checkout-container">
+      <h2>Checkout</h2>
+      <br />
+      <div className="checkout-layout">
+        <div className="checkout-summary">
+          <div>Model: {phone.name}</div>
+          <div>Rental Period: Weekly
+          </div>
+          <div>Rate: ${phone['rates']['Weekly']} / Period</div>
+          <div style={{display: 'flex'}}>Periods: 3</div>
+          <div>Due Date: {dueDate.toLocaleDateString()}</div>
+          <div style={{fontWeight: 'bold'}}>Phone Subtotal: ${rentalPrice}</div>
+          <br />
+          <div>Add-Ons:</div>
+          {addOns.slice(0,2)
+            .map(a => <div key={a.name}>{a.name} ${a.price}</div>)
+          }
+          <div style={{fontWeight: 'bold'}}>Add-Ons Subtotal: ${addOnsPrice}</div>
+          <br />
+          <div style={{fontWeight: 'bold', fontSize: '1.2em'}}><span style={{color: 'green'}}>Amount Paid: </span>${totalPrice}</div>
+        </div>
+        <div className="checkout-summary">
+          <div>Late Fees</div>
+          <div>Current Date: {today.toLocaleDateString()}</div>
+          <div>Overdue Rate: ${phone['rates']['Weekly']} Weekly</div>
+          <div>Late Fee: $50 Weekly</div>
+          <div>Late Charges: 1 Week</div>
+          <br />
+          <div style={{fontWeight: 'bold', fontSize: '1.2em'}}><span style={{color: 'red'}}>Total Late Charges: </span>$75</div>
+          <br />
+          <br />
+          <div style={{border: '2px solid black', padding: '0.5em'}}>
+            Per the <span style={{textDecoration: 'underline', color: 'blue', cursor: 'pointer'}} onClick={() => setModalContent(lateReturnPolicy)}>Late Return Policy</span>, Your original payment method will automatically be charged for any late fees.
+          </div>
+        </div>
+        <HelpText />
+      </div>
+      <div style={{marginTop: '2em'}} className='button-group button-group-horizontal'>
+        <button onClick={() => navigate('return')}>Back</button>
+        <button onClick={() => navigate('tutorial')}>How It Works</button>
+        <button onClick={() => navigate('dropoff')}>Confirm Return</button>
+      </div>
+    </div>
+  }
+
+  function Dropoff() {
+    useEffect(() => {
+    const timer = setTimeout(() => {
+      navigate('complete');
+    }, 10000);
+
+    return (() => {
+      clearTimeout(timer);
+    })
+  }, [])
+    return (<div className='container flex-container'>
+      <h2>Please Place Your Phone and Accessories Into The Drop Box</h2>
+      <div className='flex-container'>
+        <div style={{backgroundImage: 'none'}} className="demo-video-container">
+          <div className="tutorial-video">
+            Place phone and accessories in illuminated box.
+          </div>
+        </div>
+        <div style={{maxWidth: '70%', marginBottom: '0.5em'}} >
+          <h3 style={{color: 'red'}}>Please try again. Ensure the drop box door fully closes.</h3>
+        </div>
+      </div>
+      <button onClick={() => navigate('return-summary')}>Back</button>
+      <HelpText />
+    </div>)
+  }
 
   function Complete() {
   useEffect(() => {
@@ -396,7 +491,7 @@ function App() {
     useEffect(() => {
       const button = document.querySelector('#return-code-button');
       if (button) {
-        const listener = () => {setModalContent(null); navigate('complete')}
+        const listener = () => {setModalContent(null); navigate('return-summary')}
         button.addEventListener('click', listener);
         return () => button.removeEventListener('click', listener);
       }
@@ -422,7 +517,8 @@ function App() {
       {page === 'tutorial' && <Tutorial />}
       {page === 'success' && <Success />}
       {page === 'return' && <Return />}
-
+      {page === 'return-summary' && <ReturnSummary />}
+      {page === 'dropoff' && <Dropoff />}
       {page === 'complete' && <Complete />}
     </div>
   )
