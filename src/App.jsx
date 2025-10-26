@@ -1,10 +1,4 @@
-import {
-  useRef,
-  useState,
-  useEffect,
-  useLayoutEffect,
-  useCallback,
-} from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   phones as mockPhones,
   addOns as mockAddons,
@@ -677,14 +671,11 @@ function App() {
   const [modalContent, setModalContent] = useState(null);
   const [prevPage, setPrevPage] = useState(null);
 
-  const navigate = useCallback(
-    (newPage) => {
-      localStorage.clear();
-      setPrevPage(page);
-      setPage(newPage);
-    },
-    [page]
-  );
+  function navigate(newPage) {
+    localStorage.clear();
+    setPrevPage(page);
+    setPage(newPage);
+  }
 
   function updateAddons(e, addOnName) {
     setAddons((current) => {
