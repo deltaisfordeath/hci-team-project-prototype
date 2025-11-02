@@ -140,7 +140,7 @@ input[type="checkbox"] {
 }
 
 .phone-button-group {
-  margin: 2em 0;
+  margin: 1em 0;
   min-width: unset;
   width: 100%;
 }
@@ -242,6 +242,20 @@ input[type="checkbox"] {
   transform: translate(-50%);
 }
 
+.exit-button {
+  position: absolute;
+  bottom: 0.6em;
+  left: 0.75em;
+  padding: 0.375em 1em;
+  border-radius: 0.5em;
+  cursor: pointer;
+  z-index: 10000;
+  border: 1px solid black;
+  background: linear-gradient(to bottom, #f9d8d8, #f37a7a);
+  font-weight: bolder;
+  color: black;
+}
+
 .periods {
   width: 1.1em;
   height: 1.1em;
@@ -299,6 +313,16 @@ input[type="checkbox"] {
 .modal-text {
   margin-top: 2.5em;
   max-width: 80%;
+}
+
+.modal-text button {
+  min-width: 6em;
+}
+
+#confirm-exit-button {
+  background: linear-gradient(to bottom, #f9d8d8, #f37a7a);
+  border: 2px solid black;
+  color: black;
 }
 
 input[type="text"] {
@@ -396,17 +420,27 @@ input[type="text"] {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 1em;
-  padding-bottom: 0.25em;
+}
+
+input[type="date"] {
+  cursor: pointer;
 }
 
 .phone-container {
   width: 2.05in;
   padding: 0.5em;
   display: flex;
-  gap: 1em;
+  gap: 0.5em;
   flex-direction: column;
   align-items: baseline;
-  border: 2px solid black;
+  border: 1px solid black;
+  cursor: pointer;
+}
+
+.phone-container.selected {
+  border: 1px solid green;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.339);
+  background: linear-gradient(45deg, white, rgb(210, 246, 210));
 }
 
 .phone-container h3 {
@@ -448,4 +482,14 @@ input[type="radio"] {
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
+}
+
+.welcome-text {
+  font-weight: bold;
+  font-size: 1.2rem;
+  width: 100%;
+  text-shadow: 1px 0 0 white,
+      -1px 0 0 white,
+      0 1px 0 white,
+      0 -1px 0 white;
 }

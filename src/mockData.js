@@ -1,12 +1,7 @@
-export const rentalPeriods = [
-  "Daily",
-  "Weekly",
-  "Monthly"
-]
-
 export const phones = [
     {
       name: "iPhone 17",
+      description: "Apple's latest flagship, featuring the A20 Pro chip and a dynamic Pro-Motion XDR display.",
       rates: {
         Daily: 35,
         Weekly: 169,
@@ -15,6 +10,7 @@ export const phones = [
     },
     {
       name: "Galaxy S25",
+      description: "Samsung's premier device with an integrated S-Pen Pro and a stunning 200MP adaptive sensor.",
       rates: {
         Daily: 34,
         Weekly: 160,
@@ -23,6 +19,7 @@ export const phones = [
     },
     {
       name: "Google Pixel 10",
+      description: "Experience unparalleled AI-powered photography and the new Google Tensor G6 chip.",
       rates: {
         Daily: 32,
         Weekly: 155,
@@ -31,6 +28,7 @@ export const phones = [
     },
     {
       name: "OnePlus 15",
+      description: "The 'Flagship Killer' offers ultra-fast 200W charging and a silky-smooth 144Hz fluid display.",
       rates: {
         Daily: 29,
         Weekly: 140,
@@ -39,6 +37,7 @@ export const phones = [
     },
     {
       name: "Xiaomi 15 Ultra",
+      description: "A powerhouse of innovation, co-engineered with Leica for professional-grade imaging.",
       rates: {
         Daily: 28,
         Weekly: 135,
@@ -77,11 +76,6 @@ export const addOns = [
     selected: false
   },
 ]
-
-export const lateReturnPolicy = {
-  title: "Late Return Policy",
-  body: "Your original payment method will automatically be charged your selected rate plus a $50 late fee for each week the phone is not returned past the return date. Additional charges will be posted to your original payment method on the 1st of each month until the phone is returned."
-}
 
 export const insertPaymentMethod = {
   title: "Payment",

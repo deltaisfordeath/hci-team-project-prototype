@@ -1,16 +1,71 @@
 import { useRef, useState, useEffect } from "react";
-import {
-  phones as mockPhones,
-  addOns as mockAddons,
-  lateReturnPolicy,
-  insertPaymentMethod,
-  rentalPeriods,
-} from "./mockData";
+import { phones, addOns as mockAddons, insertPaymentMethod } from "./mockData";
 import "./App.css";
 
-function HelpText() {
+const minDate = new Date(new Date().setDate(new Date().getDate() + 1))
+  .toISOString()
+  .split("T")[0];
+
+function lateReturnPolicy(phone) {
+  return {
+    title: "Late Return Policy",
+    body: `Your original payment method will automatically be charged at the following rates: <div>Daily: $${phone.rates.Daily}</div><div>Weekly: $${phone.rates.Weekly}</div><div>Monthly: $${phone.rates.Monthly}</div> Plus a $50 late fee for each week the phone is not returned past the return date.`,
+  };
+}
+
+function calculateTotalDays(start, end) {
+  const M_PER_DAY = 1000 * 60 * 60 * 24;
+
+  start = new Date(start);
+  end = new Date(end);
+
+  const utcStart = Date.UTC(
+    start.getFullYear(),
+    start.getMonth(),
+    start.getDate()
+  );
+  const utcEnd = Date.UTC(end.getFullYear(), end.getMonth(), end.getDate());
+
+  const diff = (utcEnd - utcStart) / M_PER_DAY;
+
+  return Math.round(diff) + 1;
+}
+
+function getRentalPeriods(totalDays) {
+  const MONTH_DURATION = 30;
+  const WEEK_DURATION = 7;
+
+  let remaining = totalDays;
+
+  const months = Math.floor(remaining / MONTH_DURATION);
+  remaining %= MONTH_DURATION;
+
+  const weeks = Math.floor(remaining / WEEK_DURATION);
+  remaining %= WEEK_DURATION;
+
+  const days = remaining;
+
+  return { months, weeks, days };
+}
+
+function getRentalPrice(phone, returnDate, rentalDate = null) {
+  if (!rentalDate) rentalDate = new Date();
+
+  const { days, weeks, months } = getRentalPeriods(
+    calculateTotalDays(rentalDate, returnDate)
+  );
+
+  const rentalPrice =
+    days * phone.rates.Daily +
+    weeks * phone.rates.Weekly +
+    months * phone.rates.Monthly;
+
+  return rentalPrice;
+}
+
+function HelpText({ page }) {
   return (
-    <div className="help-text">
+    <div className={`help-text ${page === "welcome" ? "welcome-text" : ""}`}>
       {"Need help? Call 1-800-123-4567 (24/7 Support)"}
     </div>
   );
@@ -43,7 +98,6 @@ function Demo({ phone, navigate }) {
         </button>
         <button onClick={() => navigate("checkout")}>Rent This Phone</button>
       </div>
-      <HelpText />
     </div>
   );
 }
@@ -52,54 +106,61 @@ function RentalOptions({
   clearAddons,
   phones,
   phone,
-  duration,
-  setDuration,
+  returnDate,
+  setReturnDate,
   setPhone,
   navigate,
 }) {
   const containerRef = useRef();
 
+  const { days, weeks, months } = getRentalPeriods(
+    calculateTotalDays(new Date(), returnDate)
+  );
+
   function PhoneList() {
     return phones.map((p) => (
-      <div key={p.name} className="phone-container">
+      <div
+        key={p.name}
+        onClick={() => {
+          if (p.name !== phone.name) setPhone(p);
+        }}
+        className={`phone-container ${p.name === phone.name ? "selected" : ""}`}
+      >
         <h3>{p.name}</h3>
 
-        {Object.keys(p.rates).map((rateName) => {
-          return (
-            <div key={rateName} className="phone-rate-row">
-              <label>
-                <input
-                  type="radio"
-                  name="rental-duration"
-                  value={`${p.name}-${rateName}`}
-                  checked={phone.name === p.name && duration === rateName}
-                  onChange={() => {
-                    clearAddons();
-                    setDuration(rateName);
-                    setPhone(p);
-                  }}
-                />
-                {rateName}
-              </label>
-              ${p["rates"][rateName]}
-            </div>
-          );
-        })}
+        <div>{p.description}</div>
+
+        <div>
+          Rental Price:&nbsp;
+          <span style={{ fontWeight: "bold" }}>
+            $
+            {days * p.rates.Daily +
+              weeks * p.rates.Weekly +
+              months * p.rates.Monthly}
+          </span>
+        </div>
         <div className="phone-button-group button-group button-group-horizontal">
           <button
             className="btn-small"
-            onClick={() => {
-              setPhone(p);
+            onClick={(e) => {
+              if (phone.name !== p.name) {
+                e.stopPropagation();
+                clearAddons();
+                setPhone(p);
+              }
               navigate("demo");
             }}
           >
             Demo
           </button>
           <button
-            disabled={phone.name !== p.name}
             className="btn-small"
-            onClick={() => {
-              setPhone(p);
+            onClick={(e) => {
+              if (phone.name !== p.name) {
+                e.stopPropagation();
+                clearAddons();
+                setPhone(p);
+              }
               navigate("add-ons");
             }}
           >
@@ -113,6 +174,17 @@ function RentalOptions({
   return (
     <div className="container rental-options-container">
       <h2>Choose A Phone</h2>
+      <label htmlFor="return-date-picker">
+        Return Date:&nbsp;
+        <input
+          id="return-date-picker"
+          type="date"
+          onFocus={(e) => e.target.showPicker()}
+          min={minDate}
+          value={returnDate}
+          onChange={(e) => setReturnDate(e.target.value)}
+        />
+      </label>
       <div ref={containerRef} className="phone-list-container">
         <PhoneList />
       </div>
@@ -120,7 +192,6 @@ function RentalOptions({
         <button onClick={() => navigate("demo")}>Back</button>
         <button onClick={() => navigate("checkout")}>Checkout</button>
       </div>
-      <HelpText />
     </div>
   );
 }
@@ -160,7 +231,6 @@ function AddOns({ phone, addOns, updateAddons, navigate }) {
         </button>
         <button onClick={() => navigate("checkout")}>Checkout</button>
       </div>
-      <HelpText />
     </div>
   );
 }
@@ -227,46 +297,33 @@ function Tutorial({ navigate, prevPage }) {
       <div className="tutorial-video-container">
         <div className="tutorial-video">{segmentText[currentSegment]}</div>
       </div>
-      <div className="button-group button-group-horizontal">
+      <div className="button-group">
         <button onClick={() => navigate(prevPage)}>Back</button>
       </div>
-      <HelpText />
     </div>
   );
 }
 
 function Checkout({
   phone,
-  duration,
-  numPeriods,
+  returnDate,
   addOns,
-  setDuration,
-  setNumPeriods,
+  setReturnDate,
   updateAddons,
   setModalContent,
   navigate,
   prevPage,
 }) {
-  const rentalPrice = phone["rates"][duration] * numPeriods;
+  const rentalPrice = getRentalPrice(phone, returnDate);
   const addOnsPrice = addOns.reduce((acc, curr) => {
     return acc + (curr.selected ? curr.price : 0);
   }, 0);
   const totalPrice = rentalPrice + addOnsPrice;
   const [agreedTos, setAgreedTos] = useState(false);
 
-  function addDays(date, numDays) {
-    const newDate = new Date(date);
-    newDate.setDate(newDate.getDate() + numDays);
-    return newDate;
-  }
-
-  const today = new Date();
-  const dueDate =
-    duration === "daily"
-      ? addDays(today, numPeriods)
-      : duration === "weekly"
-      ? addDays(today, numPeriods * 7)
-      : new Date(new Date(today).setMonth(today.getMonth() + numPeriods));
+  const { days, weeks, months } = getRentalPeriods(
+    calculateTotalDays(new Date(), returnDate)
+  );
 
   return (
     <div className="container checkout-container">
@@ -274,40 +331,36 @@ function Checkout({
       <div className="checkout-layout">
         <div className="checkout-summary">
           <div>Model: {phone.name}</div>
-          <div>
-            Rental Period:&nbsp;
-            <select
-              value={duration}
-              onChange={(e) => setDuration(e.target.value)}
-            >
-              {rentalPeriods.map((per) => {
-                const price = phone["rates"][per];
-                return (
-                  <option key={`${phone.name}-${per}`} value={per}>
-                    {per}: ${price}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-          <div>Rate: ${phone["rates"][duration]} / Period</div>
-          <div style={{ display: "flex" }}>
-            Periods:&nbsp;&nbsp;
-            <div
-              className="periods change-periods"
-              onClick={() => setNumPeriods((n) => Math.max(n - 1, 1))}
-            >
-              -
+          <label htmlFor="return-date-picker">
+            Return Date:&nbsp;
+            <input
+              id="return-date-picker"
+              type="date"
+              onFocus={(e) => e.target.showPicker()}
+              min={minDate}
+              value={returnDate}
+              onChange={(e) => setReturnDate(e.target.value)}
+            />
+          </label>
+          {!!months && (
+            <div>
+              {months} {months > 1 ? "months" : "month"} @ $
+              {phone.rates.Monthly}/month: ${phone.rates.Monthly * months}
             </div>
-            <div className="periods number-periods">{numPeriods}</div>
-            <div
-              className="periods change-periods"
-              onClick={() => setNumPeriods((n) => n + 1)}
-            >
-              +
+          )}
+          {!!weeks && (
+            <div>
+              {weeks} {weeks > 1 ? "weeks" : "week"} @ ${phone.rates.Weekly}
+              /week: ${phone.rates.Weekly * weeks}
             </div>
-          </div>
-          <div>Return Date: {dueDate.toLocaleDateString()}</div>
+          )}
+          {!!days && (
+            <div>
+              {days} {days > 1 ? "days" : "day"} @ ${phone.rates.Daily}
+              /day: ${phone.rates.Daily * days}
+            </div>
+          )}
+          <hr />
           <div style={{ fontWeight: "bold" }}>
             Phone Subtotal: ${rentalPrice}
           </div>
@@ -382,7 +435,7 @@ function Checkout({
               I agree to the terms of the{" "}
               <span
                 className="tos-link"
-                onClick={() => setModalContent(lateReturnPolicy)}
+                onClick={() => setModalContent(lateReturnPolicy(phone))}
               >
                 Late Return Policy
               </span>
@@ -397,7 +450,6 @@ function Checkout({
           Continue
         </button>
       </div>
-      <HelpText />
     </div>
   );
 }
@@ -466,18 +518,11 @@ function Return({ navigate, setModalContent }) {
           Enter Code
         </button>
       </div>
-      <HelpText />
     </div>
   );
 }
 
 function ReturnSummary({ phone, addOns, navigate, setModalContent }) {
-  const rentalPrice = phone["rates"]["Weekly"] * 3;
-  const addOnsPrice = addOns.slice(0, 2).reduce((acc, curr) => {
-    return acc + curr.price;
-  }, 0);
-  const totalPrice = rentalPrice + addOnsPrice;
-
   function addDays(date, numDays) {
     const newDate = new Date(date);
     newDate.setDate(newDate.getDate() + numDays);
@@ -485,28 +530,39 @@ function ReturnSummary({ phone, addOns, navigate, setModalContent }) {
   }
 
   const today = new Date();
-  const dueDate = addDays(today, -3);
-  const rentalDate = addDays(dueDate, -21);
-  const diffInMilliseconds = today.getTime() - dueDate.getTime();
-  const daysLate = Math.max(
-    0,
-    Math.round((diffInMilliseconds / 1000) * 60 * 60 * 24)
+  const dueDate = addDays(today, -9);
+  const rentalDate = addDays(dueDate, -12);
+
+  const { days, weeks, months } = getRentalPeriods(
+    calculateTotalDays(dueDate, today)
   );
+
+  const rentalPrice = getRentalPrice(phone, dueDate, rentalDate);
+  const addOnsPrice = addOns.slice(0, 2).reduce((acc, curr) => {
+    return acc + curr.price;
+  }, 0);
+  const totalPrice = rentalPrice + addOnsPrice;
+
+  const latePrice = getRentalPrice(phone, today, dueDate);
+
+  const lateWeeks = Math.ceil(calculateTotalDays(dueDate, today) / 7);
+  const lateFees = lateWeeks * 50;
 
   return (
     <div
       style={{ position: "relative" }}
       className="container checkout-container"
     >
-      <h2>Checkout</h2>
+      <h2>Return Summary</h2>
       <br />
       <div className="checkout-layout">
         <div className="checkout-summary">
           <div>Model: {phone.name}</div>
-          <div>Rental Period: Weekly</div>
-          <div>Rate: ${phone["rates"]["Weekly"]} / Period</div>
-          <div style={{ display: "flex" }}>Periods: 3</div>
+          <div>Rental Date: {rentalDate.toLocaleDateString()}</div>
           <div>Due Date: {dueDate.toLocaleDateString()}</div>
+          <div style={today > dueDate ? { color: "red" } : {}}>
+            Current Date: {today.toLocaleDateString()}
+          </div>
           <div style={{ fontWeight: "bold" }}>
             Phone Subtotal: ${rentalPrice}
           </div>
@@ -526,16 +582,34 @@ function ReturnSummary({ phone, addOns, navigate, setModalContent }) {
           </div>
         </div>
         <div className="checkout-summary">
+          <div>Late Charges</div>
+          {!!months && (
+            <div>
+              {months} {months > 1 ? "months" : "month"} @ $
+              {phone.rates.Monthly}/month: ${phone.rates.Monthly * months}
+            </div>
+          )}
+          {!!weeks && (
+            <div>
+              {weeks} {weeks > 1 ? "weeks" : "week"} @ ${phone.rates.Weekly}
+              /week: ${phone.rates.Weekly * weeks}
+            </div>
+          )}
+          {!!days && (
+            <div>
+              {days} {days > 1 ? "days" : "day"} @ ${phone.rates.Daily}
+              /day: ${phone.rates.Daily * days}
+            </div>
+          )}
+          <br />
           <div>Late Fees</div>
-          <div>Current Date: {today.toLocaleDateString()}</div>
-          <div>Overdue Rate: ${phone["rates"]["Weekly"]} Weekly</div>
-          <div>Late Fee: $50 Weekly</div>
-          <div>Late Charges: 1 Week</div>
-          <br />
-          <div style={{ fontWeight: "bold", fontSize: "1.2em" }}>
-            <span style={{ color: "red" }}>Total Late Charges: </span>$75
+          <div>
+            {lateWeeks} weeks @ $50/week: ${lateFees}
           </div>
-          <br />
+          <div style={{ fontWeight: "bold", fontSize: "1.2em" }}>
+            <span style={{ color: "red" }}>Total Late Charges: </span>$
+            {latePrice + lateFees}
+          </div>
           <br />
           <div style={{ border: "2px solid black", padding: "0.5em" }}>
             Per the{" "}
@@ -545,7 +619,7 @@ function ReturnSummary({ phone, addOns, navigate, setModalContent }) {
                 color: "blue",
                 cursor: "pointer",
               }}
-              onClick={() => setModalContent(lateReturnPolicy)}
+              onClick={() => setModalContent(lateReturnPolicy(phone))}
             >
               Late Return Policy
             </span>
@@ -553,7 +627,6 @@ function ReturnSummary({ phone, addOns, navigate, setModalContent }) {
             late fees.
           </div>
         </div>
-        <HelpText />
       </div>
       <div
         style={{ marginTop: "2em" }}
@@ -598,7 +671,6 @@ function Dropoff({ navigate }) {
         </div>
       </div>
       <button onClick={() => navigate("return-summary")}>Back</button>
-      <HelpText />
     </div>
   );
 }
@@ -631,7 +703,7 @@ function Complete({ navigate }) {
   );
 }
 
-function Modal({ setModalContent, navigate, modalContent }) {
+function Modal({ setModalContent, navigate, modalContent, resetSettings }) {
   useEffect(() => {
     const button = document.querySelector("#return-code-button");
     if (button) {
@@ -641,6 +713,23 @@ function Modal({ setModalContent, navigate, modalContent }) {
       };
       button.addEventListener("click", listener);
       return () => button.removeEventListener("click", listener);
+    }
+    const confirmButton = document.querySelector("#confirm-exit-button");
+    const cancelButton = document.querySelector("#cancel-exit-button");
+    if (confirmButton && cancelButton) {
+      const confirmListener = () => {
+        resetSettings();
+        navigate("welcome");
+      };
+      const cancelListener = () => {
+        setModalContent(null);
+      };
+      confirmButton.addEventListener("click", confirmListener);
+      cancelButton.addEventListener("click", cancelListener);
+      return () => {
+        confirmButton.removeEventListener("click", confirmListener);
+        cancelButton.removeEventListener("click", cancelListener);
+      };
     }
   });
 
@@ -663,18 +752,34 @@ function Modal({ setModalContent, navigate, modalContent }) {
 
 function App() {
   const [page, setPage] = useState("welcome");
-  const [phone, setPhone] = useState([...mockPhones][0]);
-  const [phones, setPhones] = useState([...mockPhones]);
-  const [duration, setDuration] = useState("Daily");
-  const [numPeriods, setNumPeriods] = useState(1);
+  const [phone, setPhone] = useState([...phones][0]);
+  const [returnDate, setReturnDate] = useState(
+    new Date(new Date().setDate(new Date().getDate() + 1))
+      .toISOString()
+      .split("T")[0]
+  );
   const [addOns, setAddons] = useState(mockAddons);
   const [modalContent, setModalContent] = useState(null);
   const [prevPage, setPrevPage] = useState(null);
 
   function navigate(newPage) {
-    localStorage.clear();
     setPrevPage(page);
     setPage(newPage);
+  }
+
+  function handleExit() {
+    setModalContent({
+      title: "Exit Phone Rental",
+      body: `<div style="width: fit-content">
+        <div>Are you sure you want to exit?</div>
+        <br />
+        <div style="display: flex; gap: 1em">
+        <button id="confirm-exit-button">Exit</button>
+        <br />
+        <button id="cancel-exit-button">Continue</button>
+        </div>
+        </div>`,
+    });
   }
 
   function updateAddons(e, addOnName) {
@@ -694,6 +799,18 @@ function App() {
     });
   }
 
+  function resetSettings() {
+    clearAddons();
+    setPhone(phones[0]);
+    setReturnDate(
+      new Date(new Date().setDate(new Date().getDate() + 1))
+        .toISOString()
+        .split("T")[0]
+    );
+    setPrevPage(null);
+    setModalContent(null);
+  }
+
   return (
     <div className="container proto-container">
       {modalContent && (
@@ -701,6 +818,7 @@ function App() {
           modalContent={modalContent}
           setModalContent={setModalContent}
           navigate={navigate}
+          resetSettings={resetSettings}
         />
       )}
       {page === "welcome" && <Welcome navigate={navigate} />}
@@ -710,8 +828,8 @@ function App() {
           clearAddons={clearAddons}
           phones={phones}
           phone={phone}
-          duration={duration}
-          setDuration={setDuration}
+          returnDate={returnDate}
+          setReturnDate={setReturnDate}
           setPhone={setPhone}
           navigate={navigate}
         />
@@ -727,11 +845,9 @@ function App() {
       {page === "checkout" && (
         <Checkout
           phone={phone}
-          duration={duration}
-          numPeriods={numPeriods}
+          returnDate={returnDate}
           addOns={addOns}
-          setDuration={setDuration}
-          setNumPeriods={setNumPeriods}
+          setReturnDate={setReturnDate}
           updateAddons={updateAddons}
           setModalContent={setModalContent}
           navigate={navigate}
@@ -755,6 +871,13 @@ function App() {
       )}
       {page === "dropoff" && <Dropoff navigate={navigate} />}
       {page === "complete" && <Complete navigate={navigate} />}
+
+      {page !== "welcome" && !modalContent && (
+        <div className="exit-button" onClick={handleExit}>
+          {`EXIT`}
+        </div>
+      )}
+      <HelpText page={page} />
     </div>
   );
 }
