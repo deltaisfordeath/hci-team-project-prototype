@@ -121,8 +121,12 @@ function RentalOptions({
     return phones.map((p) => (
       <div
         key={p.name}
-        onClick={() => {
-          if (p.name !== phone.name) setPhone(p);
+        onClick={(e) => {
+          if (p.name !== phone.name) {
+            e.stopPropagation();
+            clearAddons();
+            setPhone(p);
+          }
         }}
         className={`phone-container ${p.name === phone.name ? "selected" : ""}`}
       >
